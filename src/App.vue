@@ -1,30 +1,62 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+    <main :class="colorSchema">
+        <task v-for="task in tasks" :key="task.id" :init-data="task" :remove-callback="removeTask"/>
+
+        <c-button :callback="newTask">Новая задача</c-button>
+    </main>
+<!--    <router-link to="/">Home</router-link> |-->
+<!--    <router-link to="/about">About</router-link>-->
+<!--  <router-view/>-->
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import { ref, reactive } from 'vue';
+import Task from '@/components/component.task';
+import CButton from '@/components/component.button';
 
-#nav {
-  padding: 30px;
+export default {
+    components: {
+        Task,
+        CButton,
+    },
+    setup() {
+        // #222122
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+        const tasks = reactive([
+            {
+                id: 1,
+                title: 'Поиск',
+                time: '11:10'
+            },
+            {
+                id: 2,
+                title: 'МО доработки',
+                time: '12:10'
+            }
+        ]);
 
-    &.router-link-exact-active {
-      color: #42b983;
+        const newTask = () => {
+            const last = tasks[tasks.length - 1];
+
+            tasks.push({
+                id: last.id + 1,
+                title: 'new task',
+                time: '14:00',
+            })
+        };
+
+        const removeTask = (task) => {
+            tasks.splice(tasks.indexOf(task), 1)
+        }
+
+        const tgApi = window.Telegram.WebApp;
+        const colorSchema = ref(tgApi.colorScheme);
+
+        return { colorSchema, tasks, newTask, removeTask }
     }
-  }
 }
+</script>
+
+<style lang="scss">
+
 </style>
